@@ -18,6 +18,7 @@ A sophisticated web application that classifies images into 10 categories using 
 ## 🏗️ Project Structure
 
 ```
+AI-VISION-Intelligent-Image-Recognition/
 ├── static/                    
 │   ├── style.css             # Styling
 │   └── main.js               # Frontend logic
@@ -28,6 +29,7 @@ A sophisticated web application that classifies images into 10 categories using 
 ├── requirements.txt          # Project dependencies
 └── README.md
 ```
+
 
 ---
 
