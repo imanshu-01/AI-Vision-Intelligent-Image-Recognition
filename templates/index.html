@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Vision - CIFAR-10 Image Classifier</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" type="image/x-icon" href="/static/images/logo.png">
+</head>
+<body>
+    <!-- Particle Background -->
+    <div id="particles-js"></div>
+    
+    <!-- Animated Elements -->
+    <div class="floating-elements">
+        <div class="floating-element el1"></div>
+        <div class="floating-element el2"></div>
+        <div class="floating-element el3"></div>
+        <div class="floating-element el4"></div>
+        <div class="floating-element el5"></div>
+    </div>
+    
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <h1>AI<span>Vision</span></h1>
+                </div>
+                <div class="nav-controls">
+                    <button class="theme-toggle" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="info-btn" onclick="showInfoModal()">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero-section animate__animated animate__fadeIn">
+                <div class="hero-content">
+                    <h2 class="hero-title">
+                        <span class="gradient-text">Intelligent</span> Image Recognition
+                    </h2>
+                    <p class="hero-subtitle">
+                        Upload any image and watch our AI classify it into one of 10 categories using advanced deep learning.
+                    </p>
+                    
+                    <!-- Upload Card -->
+                    <div class="upload-card" id="uploadCard">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h3>Drag & Drop Image Here</h3>
+                        <p>Supported: JPG, PNG, GIF, BMP, WEBP | Max 16MB</p>
+                        
+                        <div class="upload-buttons">
+                            <input type="file" id="imageInput" accept="image/*" hidden>
+                            <button class="btn btn-primary" onclick="openFilePicker()">
+                                <i class="fas fa-folder-open"></i> Browse Files
+                            </button>
+                            <button class="btn btn-secondary" onclick="useSampleImage()">
+                                <i class="fas fa-magic"></i> Try Sample
+                            </button>
+                        </div>
+                        
+                        <div class="upload-progress" id="uploadProgress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            <span class="progress-text" id="progressText">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar"></i> Analysis Results</h2>
+                    <div class="loading-indicator" id="loadingIndicator">
+                        <div class="spinner"></div>
+                        <span>AI is analyzing your image...</span>
+                    </div>
+                </div>
+
+                <div class="results-grid">
+                    <!-- Image Preview -->
+                    <div class="result-card preview-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-image"></i> Image Preview</h3>
+                            <button class="btn-icon" onclick="clearImage()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="image-container">
+                                <img id="imagePreview" src="" alt="Preview">
+                                <div class="image-overlay">
+                                    <button class="btn-analyze" onclick="analyzeImage()" id="analyzeBtn">
+                                        <i class="fas fa-play"></i> Start Analysis
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Predictions -->
+                    <div class="result-card predictions-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-trophy"></i> Top Predictions</h3>
+                            <span class="confidence-badge" id="topConfidence">0%</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="top-prediction" id="topPrediction">
+                                <div class="prediction-emoji">🤖</div>
+                                <div class="prediction-details">
+                                    <h4 class="prediction-class">Waiting for analysis...</h4>
+                                    <p class="prediction-desc">Upload an image to begin</p>
+                                </div>
+                            </div>
+                            
+                            <div class="prediction-meter">
+                                <div class="meter-labels">
+                                    <span>Low</span>
+                                    <span>High</span>
+                                </div>
+                                <div class="meter-bar">
+                                    <div class="meter-fill" id="meterFill"></div>
+                                </div>
+                            </div>
+
+                            <div class="other-predictions" id="otherPredictions">
+                                <!-- Other predictions will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Probability Distribution -->
+                    <div class="result-card probability-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-pie"></i> Probability Distribution</h3>
+                            <div class="card-actions">
+                                <button class="btn-icon" onclick="toggleChartView()">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="probabilityChart"></canvas>
+                            </div>
+                            <div class="probability-list" id="probabilityList">
+                                <!-- Probabilities will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Model Information -->
+                    <div class="result-card info-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-info-circle"></i> Model Information</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <i class="fas fa-layer-group"></i>
+                                    <div>
+                                        <h5>Architecture</h5>
+                                        <p>Deep CNN with 8 layers</p>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-bolt"></i>
+                                    <div>
+                                        <h5>Accuracy</h5>
+                                        <p id="modelAccuracy">Loading...</p>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-database"></i>
+                                    <div>
+                                        <h5>Training Data</h5>
+                                        <p>60,000 CIFAR-10 images</p>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-clock"></i>
+                                    <div>
+                                        <h5>Response Time</h5>
+                                        <p>&lt; 500ms</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Classes Gallery -->
+            <section class="classes-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-images"></i> CIFAR-10 Classes</h2>
+                    <p class="section-subtitle">Our AI can recognize these 10 categories</p>
+                </div>
+                
+                <div class="classes-grid" id="classesGrid">
+                    <!-- Classes will be dynamically loaded -->
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="features-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-star"></i> Why Choose Our Classifier?</h2>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3>Advanced AI</h3>
+                        <p>Powered by state-of-the-art deep learning algorithms with 85%+ accuracy</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3>Real-time Analysis</h3>
+                        <p>Get instant results with our optimized neural network</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>Detailed Insights</h3>
+                        <p>View probability distributions and confidence scores</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Privacy Focused</h3>
+                        <p>Your images are processed securely and never stored</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <i class="fas fa-brain"></i>
+                        <h2>AI<span>Vision</span></h2>
+                    </div>
+                    <p>Advanced Image Classification with Deep Learning</p>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="link-group">
+                        <h4>Technology</h4>
+                        <a href="#">TensorFlow</a>
+                        <a href="#">Keras</a>
+                        <a href="#">Flask</a>
+                    </div>
+                    
+                    <div class="link-group">
+                        <h4>Resources</h4>
+                        <a href="#">Documentation</a>
+                        <a href="#">API</a>
+                        <a href="#">GitHub</a>
+                    </div>
+                    
+                    <div class="link-group">
+                        <h4>Support</h4>
+                        <a href="#">Contact</a>
+                        <a href="#">FAQ</a>
+                        <a href="#">Report Issue</a>
+                    </div>
+                </div>
+                
+                <div class="footer-stats">
+                    <div class="stat">
+                        <i class="fas fa-images"></i>
+                        <div>
+                            <h4>10</h4>
+                            <p>Classes</p>
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-brain"></i>
+                        <div>
+                            <h4>8</h4>
+                            <p>Layers</p>
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-bolt"></i>
+                        <div>
+                            <h4>500ms</h4>
+                            <p>Speed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 AI Vision Classifier. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="https://github.com/imanshu-01"><i class="fab fa-github"></i></a>
+                    <a href="https://x.com/Himansh79374221"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.linkedin.com/in/himanshu-patle-2b563730b?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Info Modal -->
+    <div class="modal-overlay" id="infoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-info-circle"></i> About CIFAR-10 Classifier</h3>
+                <button class="btn-icon" onclick="hideInfoModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>CIFAR-10 is a dataset containing 60,000 32x32 color images in 10 classes, with 6,000 images per class. The classes are:</p>
+                
+                <ul class="class-list">
+                    <li><span class="emoji">✈️</span> Airplane</li>
+                    <li><span class="emoji">🚗</span> Automobile</li>
+                    <li><span class="emoji">🐦</span> Bird</li>
+                    <li><span class="emoji">🐱</span> Cat</li>
+                    <li><span class="emoji">🦌</span> Deer</li>
+                    <li><span class="emoji">🐕</span> Dog</li>
+                    <li><span class="emoji">🐸</span> Frog</li>
+                    <li><span class="emoji">🐴</span> Horse</li>
+                    <li><span class="emoji">🚢</span> Ship</li>
+                    <li><span class="emoji">🚚</span> Truck</li>
+                </ul>
+                
+                <p><strong>Note:</strong> The model works best with clear images that match these categories. For best results, upload images similar to the CIFAR-10 dataset.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="hideInfoModal()">Got it!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/main.js"></script>
+</body>
+</html>
