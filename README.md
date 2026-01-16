@@ -17,15 +17,22 @@ A sophisticated web application that classifies images into 10 categories using 
 
 VISION_AI/
 ├── main.py                  # Flask backend server
+
 ├── train_cifar10.py         # Model training script
+
 ├── cifar10_model.h5         # Trained model file
+
 ├── requirements.txt         # Python dependencies
+
 ├── README.md                # Project documentation
+
 ├── templates/
 │   └── index.html           # Main web interface
+
 ├── static/
 │   ├── style.css            # Styling
 │   └── main.js              # Frontend logic 
+
 └── uploads/                 # Temporary image storage
 
 ## 🚀 Quick Start
