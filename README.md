@@ -3,8 +3,6 @@
 
 A sophisticated web application that classifies images into 10 categories using a deep learning model trained on the CIFAR-10 dataset.
 
-## Analysis Report
-
 <img width="1919" height="1079" alt="Image" src="https://github.com/user-attachments/assets/35c0ee24-9bfd-4d56-a4b2-fe122cbf179a" />
 
 ## 🌟 Features
